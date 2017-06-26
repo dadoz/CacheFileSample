@@ -2,13 +2,17 @@ package com.sample.lmn.davide.cachefilesample.manager;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import com.vincentbrison.openlibraries.android.dualcache.Builder;
 import com.vincentbrison.openlibraries.android.dualcache.DualCache;
 import com.vincentbrison.openlibraries.android.dualcache.JsonSerializer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.util.regex.Pattern;
 
 /**
@@ -20,15 +24,17 @@ public class CacheManager {
     private static final int TEST_APP_VERSION = 1;
     private final DualCache<Object> cache;
     private final AssetManager assetManager;
-    private final int DISK_MAX_SIZE = 10000;
+    private final int DISK_MAX_SIZE = 28967680;
+    private final WeakReference<OnCacheEntryRetrievesCallbacks> lst;
 
-    public CacheManager(Context context) {
+    public CacheManager(Context context, OnCacheEntryRetrievesCallbacks lst) {
         this.assetManager = context.getAssets();
+        this.lst = new WeakReference<>(lst);
         cache = new Builder<>(CACHE_NAME, TEST_APP_VERSION)
                 .enableLog()
                 .noRam()
 //                .useReferenceInRam(RAM_MAX_SIZE, new SizeOfVehiculeForTesting())
-                .useSerializerInDisk(DISK_MAX_SIZE, true, new JsonSerializer<>(Object.class), context)
+                .useSerializerInDisk(DISK_MAX_SIZE, true, new BinaryFileSerializer(), context)
                 .build();
     }
 
@@ -36,11 +42,13 @@ public class CacheManager {
      *
      * @param key
      */
-    public void putFile(String key) {
+    public void put(String key) {
         String filename = key;
         if (!isValidKey(key))
             key = parsedKey(key);
-        cache.put(key, readFile(filename));
+        String file = readFile(filename);
+        Log.e("TAG", "" + file.length());
+        cache.put(key, file);
     }
 
 
@@ -64,6 +72,21 @@ public class CacheManager {
         if (!isValidKey(key))
             key = parsedKey(key);
         return cache.get(key);
+    }
+
+    public void getAsync(String key) {
+        if (!isValidKey(key))
+            key = parsedKey(key);
+        final String finalKey = key;
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                Object file = cache.get(finalKey);
+                if (lst.get() != null)
+                    lst.get().onCacheEntryRetrieved(file);
+            }
+        }).start();
     }
 
     /**
@@ -95,19 +118,58 @@ public class CacheManager {
      * @param inFile
      * @return
      */
-    public byte[] readFile(String inFile) {
-
+    public String readFile(String inFile) {
         try {
             InputStream stream = assetManager.open(inFile);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
-            int size = stream.available();
-            byte[] buffer = new byte[size];
-            stream.read(buffer);
-            stream.close();
-            return buffer;
+            StringBuilder out = new StringBuilder();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                out.append(line);
+            }
+            String result = out.toString();
+            reader.close();
+            return result;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * public interface
+     */
+    public interface OnCacheEntryRetrievesCallbacks {
+        void onCacheEntryRetrieved(Object file);
+    }
+
+    /**
+     * custome deserializer
+     */
+    private class BinaryFileSerializer extends JsonSerializer {
+
+        public BinaryFileSerializer() {
+            super(Object.class);
+        }
+
+        @Override
+        public String toString(Object data) {
+            Log.e(getClass().getName(), data.toString().length() + "");
+            return data.toString();
+        }
+        @Override
+        public Object fromString(String data) {
+            try {
+
+                Log.e(getClass().getName(), data.length() + "");
+                return data.getBytes();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
     }
 }

@@ -9,14 +9,14 @@
 
     <Button
         android:id="@+id/putOnCacheButtonId"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         android:backgroundTint="@color/colorPrimaryDark"
         android:text="PUT"/>
     <Button
         android:id="@+id/getOnCacheButtonId"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         android:backgroundTint="@color/colorPrimaryDark"
