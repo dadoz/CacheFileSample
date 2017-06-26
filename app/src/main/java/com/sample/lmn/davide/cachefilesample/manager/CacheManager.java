@@ -24,7 +24,7 @@ public class CacheManager {
     private static final int TEST_APP_VERSION = 1;
     private final DualCache<Object> cache;
     private final AssetManager assetManager;
-    private final int DISK_MAX_SIZE = 28967680;
+    private static final int DISK_MAX_SIZE = 28967680;
     private final WeakReference<OnCacheEntryRetrievesCallbacks> lst;
 
     public CacheManager(Context context, OnCacheEntryRetrievesCallbacks lst) {
@@ -50,7 +50,6 @@ public class CacheManager {
         Log.e("TAG", "" + file.length());
         cache.put(key, file);
     }
-
 
     /**
      *
@@ -148,9 +147,9 @@ public class CacheManager {
     /**
      * custome deserializer
      */
-    private class BinaryFileSerializer extends JsonSerializer {
+    private class BinaryFileSerializer extends JsonSerializer<Object> {
 
-        public BinaryFileSerializer() {
+        BinaryFileSerializer() {
             super(Object.class);
         }
 
