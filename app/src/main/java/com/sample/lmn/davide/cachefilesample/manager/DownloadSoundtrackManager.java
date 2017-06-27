@@ -41,8 +41,9 @@ public class DownloadSoundtrackManager implements Response.ErrorListener, Respon
         //input stream
         InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, url,
                 this, this, null);
-        //add request on queui
-        Volley.newRequestQueue(context.get()).add(request);
+        //add request on queue
+        Volley.newRequestQueue(context.get())
+                .add(request);
     }
 
     @Override

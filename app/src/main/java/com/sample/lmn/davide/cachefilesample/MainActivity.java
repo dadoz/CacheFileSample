@@ -23,8 +23,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         CacheManager.OnCacheEntryRetrievesCallbacks,
         Response.Listener, Response.ErrorListener {
     private static final String FILENAME_SAMPLE = "mozart_sample.mp3";
+    private static final String REMOTE_FILE = "http://www.amclassical.com/mp3/amclassical_moonlight_sonata_movement_1.mp3";
     private View putOnCacheButton;
     private View getOnCacheButton;
+    private View requestFileButton;
 
     @Inject
     public CacheManager cacheManager;
@@ -50,8 +52,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void onInitView() {
         putOnCacheButton = findViewById(R.id.putOnCacheButtonId);
         getOnCacheButton = findViewById(R.id.getOnCacheButtonId);
+        requestFileButton = findViewById(R.id.requestFileButtonId);
         putOnCacheButton.setOnClickListener(this);
         getOnCacheButton.setOnClickListener(this);
+        requestFileButton.setOnClickListener(this);
     }
 
 
@@ -62,11 +66,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 cacheManager.put(FILENAME_SAMPLE);
                 break;
             case R.id.getOnCacheButtonId:
-                cacheManager.getAsync(FILENAME_SAMPLE);
+                cacheManager.getAsync(REMOTE_FILE);
                 break;
             case R.id.requestFileButtonId:
                 downloadSoundtrackManager
-                        .getFileFromUrl(Uri.parse("http://www.amclassical.com/mp3/amclassical_moonlight_sonata_movement_1.mp3"));
+                        .getFileFromUrl(Uri.parse(REMOTE_FILE));
                 downloadSoundtrackManager.setLst(new WeakReference<Response.Listener<byte[]>>(this));
                 downloadSoundtrackManager.setLst2(new WeakReference<Response.ErrorListener>(this));
                 break;
@@ -113,7 +117,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onResponse(Object response) {
-        Log.e(getClass().getName(), "download ok- " + response.toString().length());
+        Toast.makeText(this, "Download with success " + ((byte[]) response).length, Toast.LENGTH_SHORT).show();
+        Log.e(getClass().getName(), "download ok- " + ((byte[]) response).length);
     }
 
 }

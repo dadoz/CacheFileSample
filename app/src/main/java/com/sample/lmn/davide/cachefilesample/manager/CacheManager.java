@@ -2,6 +2,7 @@ package com.sample.lmn.davide.cachefilesample.manager;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.util.Base64;
 import android.util.Log;
 
 import com.vincentbrison.openlibraries.android.dualcache.Builder;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
-import java.util.regex.Pattern;
 
 /**
  * Created by davide-syn on 6/26/17.
@@ -43,12 +43,7 @@ public class CacheManager {
      * @param key
      */
     public void put(String key) {
-        String filename = key;
-        if (!isValidKey(key))
-            key = parsedKey(key);
-        String file = readFile(filename);
-        Log.e("TAG", "" + file.length());
-        cache.put(key, file);
+        put(key, readFile(key));
     }
 
     /**
@@ -57,9 +52,7 @@ public class CacheManager {
      * @param file
      */
     public void put(String key, Object file) {
-        if (!isValidKey(key))
-            key = parsedKey(key);
-        cache.put(key, file);
+        request("PUT", key, file);
     }
 
     /**
@@ -68,49 +61,53 @@ public class CacheManager {
      * @return
      */
     public Object get(String key) {
-        if (!isValidKey(key))
-            key = parsedKey(key);
-        return cache.get(key);
+        return request("GET", key, null);
     }
 
-    public void getAsync(String key) {
-        if (!isValidKey(key))
-            key = parsedKey(key);
-        final String finalKey = key;
-        new Thread(new Runnable() {
+    /**
+     * TODO make this on decorator ??
+     * @param type
+     * @param key
+     * @param file
+     * @return
+     */
+    private Object request(String type, String key, Object file) {
+        //encoding key
+        String encodedKey = generateEncodedKey(key);
+        //make request
+        if (type.equals("GET")) {
+            return cache.get(encodedKey);
+        }
+        if (type.equals("PUT")) {
+            cache.put(encodedKey, file);
+        }
+        return null;
+    }
 
+    /**
+     *
+     * @param key
+     * @return
+     */
+    private String generateEncodedKey(String key) {
+        if (key != null) {
+            String encoded = Base64.encodeToString(key.getBytes(), Base64.DEFAULT).replace("=", "").toLowerCase();
+            if (encoded.length() >= 64)
+                encoded = encoded.substring(0, 63);
+            return encoded;
+        }
+        return null;
+    }
+
+    public void getAsync(final String key) {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                Object file = cache.get(finalKey);
                 if (lst.get() != null)
-                    lst.get().onCacheEntryRetrieved(file);
+                    lst.get().onCacheEntryRetrieved(get(key));
             }
         }).start();
     }
-
-    /**
-     *
-     * @param key
-     * @return
-     */
-    private String parsedKey(String key) {
-        if (key == null)
-            return null;
-        return key.replace(".", "");
-    }
-
-    /**
-     *
-     * @param key
-     * @return
-     */
-    public static boolean isValidKey(String key) {
-        if (key == null)
-            return false;
-        Pattern p = Pattern.compile("[a-z0-9_-]{1,64}");
-        return p.matcher(key).matches();
-    }
-
 
     /**
      *
