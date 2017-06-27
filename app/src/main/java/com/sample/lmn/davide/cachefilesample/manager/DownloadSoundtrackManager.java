@@ -18,18 +18,17 @@ import java.util.Map;
  * Created by davide-syn on 6/26/17.
  */
 
-public class DownloadSoundtrackManager {
+public class DownloadSoundtrackManager implements Response.ErrorListener, Response.Listener<byte[]> {
     private final WeakReference<Context> context;
+    private final CacheManager cacheManager;
     private WeakReference<Response.Listener<byte[]>> lst;
     private WeakReference<Response.ErrorListener> lst2;
+    private Uri url;
 
-    public DownloadSoundtrackManager(Context context,
-                                     Response.Listener<byte[]> lst,
-                                     Response.ErrorListener lst2) {
+    public DownloadSoundtrackManager(Context context, CacheManager cacheManager) {
         this.context = new WeakReference<>(context);
         // Instantiate the RequestQueue.
-        this.lst = new WeakReference<Response.Listener<byte[]>>(lst);
-        this.lst2 = new WeakReference<Response.ErrorListener>(lst2);
+        this.cacheManager = cacheManager;
     }
 
     /**
@@ -37,26 +36,37 @@ public class DownloadSoundtrackManager {
      * @param url
      */
     public void getFileFromUrl(Uri url) {
+        //replace
+        this.url = url;
         //input stream
         InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, url,
-                new Response.Listener<byte[]>() {
-                    @Override
-                    public void onResponse(byte[] response) {
-                        if (lst != null)
-                            lst.get().onResponse(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        if (lst2 != null)
-                            lst2.get().onErrorResponse(error);
-                    }
-                }
-                , null);
-
+                this, this, null);
         //add request on queui
         Volley.newRequestQueue(context.get()).add(request);
+    }
+
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        if (lst2 != null && lst2.get() != null)
+            lst2.get().onErrorResponse(error);
+
+    }
+
+    @Override
+    public void onResponse(byte[] response) {
+        //put file in cache manger
+        cacheManager.put(url.toString(), new String(response));
+        //cb
+        if (lst != null && lst.get() != null)
+            lst.get().onResponse(response);
+    }
+
+    public void setLst(WeakReference<Response.Listener<byte[]>> lst) {
+        this.lst = lst;
+    }
+
+    public void setLst2(WeakReference<Response.ErrorListener> lst2) {
+        this.lst2 = lst2;
     }
 
     /**

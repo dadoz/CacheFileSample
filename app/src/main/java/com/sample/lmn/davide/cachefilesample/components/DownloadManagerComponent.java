@@ -13,6 +13,6 @@ import dagger.Component;
 
 @Singleton
 @Component(modules = {DownloadManagerModule.class})
-public interface DonwloadManagerComponent {
+public interface DownloadManagerComponent {
     void inject(MainActivity activity);
 }

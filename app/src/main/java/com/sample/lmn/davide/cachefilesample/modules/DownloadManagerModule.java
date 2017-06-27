@@ -10,7 +10,7 @@ import java.lang.ref.WeakReference;
 import dagger.Module;
 import dagger.Provides;
 
-import static com.sample.lmn.davide.cachefilesample.manager.CacheManager.*;
+import static com.sample.lmn.davide.cachefilesample.manager.CacheManager.OnCacheEntryRetrievesCallbacks;
 
 /**
  * Created by davide-syn on 6/26/17.
@@ -31,7 +31,8 @@ public class DownloadManagerModule {
     }
 
     @Provides
-    public DownloadSoundtrackManager downloadSoundtrackManager() {
-        return new DownloadSoundtrackManager(context.get());
+    public DownloadSoundtrackManager provideSoundtrackManager() {
+        CacheManager cacheManager = new CacheManager(context.get(), lst);
+        return new DownloadSoundtrackManager(context.get(), cacheManager);
     }
 }
