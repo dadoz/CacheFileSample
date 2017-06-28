@@ -8,20 +8,19 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.View
-import android.widget.Toast
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.sample.lmn.davide.cachefilesample.components.DaggerDownloadManagerComponent
+import com.sample.lmn.davide.cachefilesample.components.DownloadManagerComponent
 import com.sample.lmn.davide.cachefilesample.manager.DownloadSoundtrackManager
 import com.sample.lmn.davide.cachefilesample.manager.FileStorageManager
 import com.sample.lmn.davide.cachefilesample.modules.DownloadManagerModule
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.FileInputStream
-import java.lang.ref.WeakReference
 import javax.inject.Inject
 
-open class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorageManager.OnCacheEntryRetrievesCallbacks, Response.Listener<Any>, Response.ErrorListener {
+open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRetrievesCallbacks, Response.Listener<Any>, Response.ErrorListener {
+
     var mediaPlayer: MediaPlayer? = null
 
     @Inject
@@ -29,25 +28,30 @@ open class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorage
     @Inject
     lateinit var downloadSoundtrackManager: DownloadSoundtrackManager
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
+    val component: DownloadManagerComponent by lazy {
         //building dagger component
         DaggerDownloadManagerComponent
                 .builder()
                 .downloadManagerModule(DownloadManagerModule(applicationContext, this))
                 .build()
-                .inject(this)
+    }
 
-        //init view
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        component.inject(this)
         onInitView()
     }
 
     private fun onInitView() {
-        putOnCacheButtonId.setOnClickListener(this)
-        getOnCacheButtonId.setOnClickListener(this)
-        playButtonId.setOnClickListener(this)
+        getOnCacheButtonId.setOnClickListener { fileStorageManager.get(REMOTE_FILE) }
+        playButtonId.setOnClickListener {
+
+            //make coroutine
+            downloadSoundtrackManager.getFileFromUrl(Uri.parse(REMOTE_FILE))
+            downloadSoundtrackManager.setLst(this)
+            downloadSoundtrackManager.setLst2(this)
+        }
         initMediaPlayer()
     }
 
@@ -78,30 +82,9 @@ open class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorage
         Snackbar.make(findViewById(R.id.mainActivityLayoutId), message, Snackbar.LENGTH_LONG).show()
     }
 
-
-    override fun onClick(view: View) {
-        when (view.id) {
-            //put
-            R.id.putOnCacheButtonId -> fileStorageManager.put(FILENAME_SAMPLE)
-            //play
-            R.id.playButtonId -> fileStorageManager.get(REMOTE_FILE)
-            //request
-            R.id.requestFileButtonId -> {
-                downloadSoundtrackManager.getFileFromUrl(Uri.parse(REMOTE_FILE))
-                downloadSoundtrackManager.setLst(WeakReference<Response.Listener<Any>>(this))
-                downloadSoundtrackManager.setLst2(WeakReference<Response.ErrorListener>(this))
-            }
-        }
-    }
-
     private fun handleResult(file: FileInputStream?, context: Context) {
-        if (file != null && file.toString().length != 0) {
-            Toast.makeText(context, file.toString(), Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        Toast.makeText(context, "Empty file", Toast.LENGTH_SHORT).show()
-
+//        Toast.makeText(context, file.toString().length, Toast.LENGTH_SHORT).show()
+        showSuccess(file.toString().length.toString())
     }
 
     override fun onCacheEntryRetrieved(fileInputStream: FileInputStream) {
@@ -111,14 +94,22 @@ open class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorage
         }
     }
 
+    override fun onCacheEntryRetrieveError(message: String?) {
+        showError(message?: "Error")
+    }
+
     override fun onErrorResponse(error: VolleyError) {
         Log.e(javaClass.name, "download error - " + error.message)
 
     }
 
     override fun onResponse(response: Any) {
-        Toast.makeText(this, "Download with success " + (response as ByteArray).size, Toast.LENGTH_SHORT).show()
+        showSuccess((response as ByteArray).size.toString())
         Log.e(javaClass.name, "download ok- " + response.size)
+    }
+
+    fun showSuccess(message: String) {
+        Snackbar.make(findViewById(R.id.mainActivityLayoutId), message, Snackbar.LENGTH_LONG).show()
     }
 
     companion object {

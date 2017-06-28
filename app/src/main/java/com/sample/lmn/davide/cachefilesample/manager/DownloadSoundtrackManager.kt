@@ -2,6 +2,7 @@ package com.sample.lmn.davide.cachefilesample.manager
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
 import com.android.volley.Response
@@ -43,22 +44,23 @@ class DownloadSoundtrackManager(context: Context?, private val fileStorageManage
      *
      */
     override fun onResponse(response: ByteArray) {
-        fileStorageManager.put(url.toString(), String(response))
+        Log.e(javaClass.name, url.toString())
+        fileStorageManager.put(url.toString(), response)
         lst?.get()?.onResponse(response)
     }
 
     /**
      *
      */
-    fun setLst(lst: WeakReference<Response.Listener<Any>>) {
-        this.lst = lst
+    fun setLst(lst: Response.Listener<Any>) {
+        this.lst = WeakReference(lst)
     }
 
     /**
      *
      */
-    fun setLst2(lst2: WeakReference<Response.ErrorListener>) {
-        this.lst2 = lst2
+    fun setLst2(lst2: Response.ErrorListener) {
+        this.lst2 = WeakReference(lst2)
     }
 
     /**
