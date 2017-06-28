@@ -21,14 +21,13 @@ import java.io.FileInputStream
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorageManager.OnCacheEntryRetrievesCallbacks, Response.Listener<Any>, Response.ErrorListener {
-
+open class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorageManager.OnCacheEntryRetrievesCallbacks, Response.Listener<Any>, Response.ErrorListener {
     var mediaPlayer: MediaPlayer? = null
 
     @Inject
-    var fileStorageManager: FileStorageManager? = null
+    lateinit var fileStorageManager: FileStorageManager
     @Inject
-    var downloadSoundtrackManager: DownloadSoundtrackManager? = null
+    lateinit var downloadSoundtrackManager: DownloadSoundtrackManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,14 +82,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorageManag
     override fun onClick(view: View) {
         when (view.id) {
             //put
-            R.id.putOnCacheButtonId -> fileStorageManager?.put(FILENAME_SAMPLE)
+            R.id.putOnCacheButtonId -> fileStorageManager.put(FILENAME_SAMPLE)
             //play
-            R.id.playButtonId -> fileStorageManager?.get(REMOTE_FILE)
+            R.id.playButtonId -> fileStorageManager.get(REMOTE_FILE)
             //request
             R.id.requestFileButtonId -> {
-                downloadSoundtrackManager?.getFileFromUrl(Uri.parse(REMOTE_FILE))
-                downloadSoundtrackManager?.setLst(WeakReference<Response.Listener<Any>>(this))
-                downloadSoundtrackManager?.setLst2(WeakReference<Response.ErrorListener>(this))
+                downloadSoundtrackManager.getFileFromUrl(Uri.parse(REMOTE_FILE))
+                downloadSoundtrackManager.setLst(WeakReference<Response.Listener<Any>>(this))
+                downloadSoundtrackManager.setLst2(WeakReference<Response.ErrorListener>(this))
             }
         }
     }
