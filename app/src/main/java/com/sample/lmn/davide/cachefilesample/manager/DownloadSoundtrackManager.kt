@@ -17,7 +17,7 @@ import java.util.*
 
 class DownloadSoundtrackManager(context: Context?, private val fileStorageManager: FileStorageManager) : Response.ErrorListener, Response.Listener<ByteArray> {
     private val context: WeakReference<Context?> = WeakReference(context)
-    private var lst: WeakReference<Response.Listener<ByteArray>>? = null
+    private var lst: WeakReference<Response.Listener<Any>>? = null
     private var lst2: WeakReference<Response.ErrorListener>? = null
     private var url: Uri? = null
 
@@ -50,7 +50,7 @@ class DownloadSoundtrackManager(context: Context?, private val fileStorageManage
     /**
      *
      */
-    fun setLst(lst: WeakReference<Response.Listener<ByteArray>>) {
+    fun setLst(lst: WeakReference<Response.Listener<Any>>) {
         this.lst = lst
     }
 

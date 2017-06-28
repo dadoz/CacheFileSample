@@ -10,30 +10,25 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.sample.lmn.davide.cachefilesample.components.DaggerDownloadManagerComponent
-import com.sample.lmn.davide.cachefilesample.manager.FileStorageManager
 import com.sample.lmn.davide.cachefilesample.manager.DownloadSoundtrackManager
+import com.sample.lmn.davide.cachefilesample.manager.FileStorageManager
 import com.sample.lmn.davide.cachefilesample.modules.DownloadManagerModule
-
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
-
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorageManager.OnCacheEntryRetrievesCallbacks, Response.Listener<*>, Response.ErrorListener {
-    private var putOnCacheButton: View? = null
-    private var getOnCacheButton: View? = null
-    private var requestFileButton: View? = null
+class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorageManager.OnCacheEntryRetrievesCallbacks, Response.Listener<Any>, Response.ErrorListener {
+
+    var mediaPlayer: MediaPlayer? = null
 
     @Inject
     var fileStorageManager: FileStorageManager? = null
     @Inject
     var downloadSoundtrackManager: DownloadSoundtrackManager? = null
-    private var mediaPlayer: MediaPlayer? = null
-    private var playButton: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,15 +46,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorageManag
     }
 
     private fun onInitView() {
-        putOnCacheButton = findViewById(R.id.putOnCacheButtonId)
-        getOnCacheButton = findViewById(R.id.getOnCacheButtonId)
-        requestFileButton = findViewById(R.id.requestFileButtonId)
-        playButton = findViewById(R.id.playButtonId)
-        putOnCacheButton!!.setOnClickListener(this)
-        getOnCacheButton!!.setOnClickListener(this)
-        requestFileButton!!.setOnClickListener(this)
-        playButton!!.setOnClickListener(this)
-
+        putOnCacheButtonId.setOnClickListener(this)
+        getOnCacheButtonId.setOnClickListener(this)
+        playButtonId.setOnClickListener(this)
         initMediaPlayer()
     }
 
@@ -81,7 +70,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorageManag
             mediaPlayer!!.start()
         } catch (e: Exception) {
             e.printStackTrace()
-            showError(e.message)
+            showError(e.message?: "default")
         }
 
     }
@@ -93,15 +82,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, FileStorageManag
 
     override fun onClick(view: View) {
         when (view.id) {
-        //            case R.id.playButtonId:
-        //                playCachedFile();
-        //                break;
-            R.id.putOnCacheButtonId -> fileStorageManager!!.put(FILENAME_SAMPLE)
-            R.id.playButtonId -> fileStorageManager!!.getAsync(REMOTE_FILE)
+            //put
+            R.id.putOnCacheButtonId -> fileStorageManager?.put(FILENAME_SAMPLE)
+            //play
+            R.id.playButtonId -> fileStorageManager?.get(REMOTE_FILE)
+            //request
             R.id.requestFileButtonId -> {
-                downloadSoundtrackManager!!.getFileFromUrl(Uri.parse(REMOTE_FILE))
-                downloadSoundtrackManager!!.setLst(WeakReference<Response.Listener<ByteArray>>(this))
-                downloadSoundtrackManager!!.setLst2(WeakReference<Response.ErrorListener>(this))
+                downloadSoundtrackManager?.getFileFromUrl(Uri.parse(REMOTE_FILE))
+                downloadSoundtrackManager?.setLst(WeakReference<Response.Listener<Any>>(this))
+                downloadSoundtrackManager?.setLst2(WeakReference<Response.ErrorListener>(this))
             }
         }
     }
