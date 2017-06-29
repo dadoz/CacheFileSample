@@ -44,7 +44,6 @@ open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRe
     }
 
     private fun onInitView() {
-        getOnCacheButtonId.setOnClickListener { fileStorageManager.get(REMOTE_FILE) }
         playButtonId.setOnClickListener {
 
             //make coroutine
@@ -68,6 +67,7 @@ open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRe
      */
     private fun playCachedFile(inputStream: FileInputStream) {
         try {
+            showSuccess("eureka");
             mediaPlayer!!.setDataSource(inputStream.fd)
             mediaPlayer!!.prepare()
             mediaPlayer!!.start()
@@ -104,8 +104,9 @@ open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRe
     }
 
     override fun onResponse(response: Any) {
-        showSuccess((response as ByteArray).size.toString())
-        Log.e(javaClass.name, "download ok- " + response.size)
+        onCacheEntryRetrieved(FileInputStream(response as String))
+//        showSuccess((response as ByteArray).size.toString())
+//        Log.e(javaClass.name, "download ok- " + response.size)
     }
 
     fun showSuccess(message: String) {

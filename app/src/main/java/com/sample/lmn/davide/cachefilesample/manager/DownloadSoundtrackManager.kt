@@ -2,7 +2,6 @@ package com.sample.lmn.davide.cachefilesample.manager
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
 import com.android.volley.Response
@@ -16,21 +15,38 @@ import java.util.*
  * Created by davide-syn on 6/26/17.
  */
 
-class DownloadSoundtrackManager(context: Context?, private val fileStorageManager: FileStorageManager) : Response.ErrorListener, Response.Listener<ByteArray> {
+class DownloadSoundtrackManager(context: Context?, private val fileStorageManager: FileStorageManager) : Response.ErrorListener {
     private val context: WeakReference<Context?> = WeakReference(context)
     private var lst: WeakReference<Response.Listener<Any>>? = null
     private var lst2: WeakReference<Response.ErrorListener>? = null
-    private var url: Uri? = null
+
 
     /**
+     *
+     * TODO refactor
      * @param url
      */
     fun getFileFromUrl(url: Uri) {
-        //replace
-        this.url = url
+        val key = fileStorageManager.get(url.toString())
+
+        //cached
+        if (key != null) {
+            lst?.get()?.onResponse(fileStorageManager.getFullPath(url.toString()))
+            return
+        }
+        //online request
+        requestRemoteFile(url)
+    }
+
+    fun requestRemoteFile(url: Uri) {
         //add request on queue
         Volley.newRequestQueue(context.get())
-                .add(InputStreamVolleyRequest(Request.Method.GET, url, this, this, HashMap()))
+                .add(InputStreamVolleyRequest(Request.Method.GET, url,
+                        Response.Listener<ByteArray> { response ->
+                            fileStorageManager.put(url.toString(), response)
+                            lst?.get()?.onResponse(response)
+                        },
+                        this, HashMap()))
     }
 
     /**
@@ -40,14 +56,11 @@ class DownloadSoundtrackManager(context: Context?, private val fileStorageManage
         lst2?.get()?.onErrorResponse(error)
     }
 
-    /**
-     *
-     */
-    override fun onResponse(response: ByteArray) {
-        Log.e(javaClass.name, url.toString())
-        fileStorageManager.put(url.toString(), response)
-        lst?.get()?.onResponse(response)
-    }
+//    /**
+//     *
+//     */
+//    override fun onResponse(response: ByteArray) {
+//    }
 
     /**
      *

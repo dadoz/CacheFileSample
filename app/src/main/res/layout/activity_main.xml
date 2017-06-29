@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainActivityLayoutId"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,35 +8,22 @@
     android:layout_margin="16dp"
     tools:context="com.sample.lmn.davide.cachefilesample.MainActivity">
 
-    <Button
-        android:visibility="gone"
-        android:id="@+id/putOnCacheButtonId"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/colorPrimary"
-        android:text="PUT"/>
-    <Button
-        android:visibility="gone"
-        android:id="@+id/getOnCacheButtonId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/colorPrimary"
-        android:text="GET"/>
-    <Button
-        android:id="@+id/requestFileButtonId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/colorPrimary"
-        android:text="DOWNLOAD FILE"/>
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="sample url"/>
+
+    </android.support.design.widget.TextInputLayout>
     <Button
         android:id="@+id/playButtonId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
-        android:backgroundTint="@color/md_amber_400"
+        android:backgroundTint="@color/colorAccent"
         android:text="PLAY"/>
 
 </LinearLayout>
