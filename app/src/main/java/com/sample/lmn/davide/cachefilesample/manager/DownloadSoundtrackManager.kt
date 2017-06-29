@@ -42,10 +42,7 @@ class DownloadSoundtrackManager(context: Context?, private val fileStorageManage
         //add request on queue
         Volley.newRequestQueue(context.get())
                 .add(InputStreamVolleyRequest(Request.Method.GET, url,
-                        Response.Listener<ByteArray> { response ->
-                            fileStorageManager.put(url.toString(), response)
-                            lst?.get()?.onResponse(response)
-                        },
+                        Response.Listener<ByteArray> { response -> fileStorageManager.put(url.toString(), response) },
                         this, HashMap()))
     }
 

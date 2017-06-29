@@ -49,7 +49,10 @@ class FileStorageManager(context: Context?, lst: FileStorageManager.OnCacheEntry
     operator fun get(key: String): String? {
         val encodedKey = generateEncodedKey(key)
         val soundTrack = SoundTrack().query { query -> query.equalTo("key", encodedKey) }
-        return soundTrack.get(0).key
+
+        if (soundTrack.isEmpty())
+            return null;
+        return soundTrack[0].key
     }
 
     /**

@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRetrievesCallbacks, Response.Listener<Any>, Response.ErrorListener {
 
-    var mediaPlayer: MediaPlayer? = null
+    lateinit var mediaPlayer: MediaPlayer
 
     @Inject
     lateinit var fileStorageManager: FileStorageManager
@@ -45,9 +45,9 @@ open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRe
 
     private fun onInitView() {
         playButtonId.setOnClickListener {
-
+            val soundTrackUrl = soundTrackUrlEditTextId.text.toString()
             //make coroutine
-            downloadSoundtrackManager.getFileFromUrl(Uri.parse(REMOTE_FILE))
+            downloadSoundtrackManager.getFileFromUrl(Uri.parse(soundTrackUrl))
             downloadSoundtrackManager.setLst(this)
             downloadSoundtrackManager.setLst2(this)
         }
@@ -68,9 +68,10 @@ open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRe
     private fun playCachedFile(inputStream: FileInputStream) {
         try {
             showSuccess("eureka");
-            mediaPlayer!!.setDataSource(inputStream.fd)
-            mediaPlayer!!.prepare()
-            mediaPlayer!!.start()
+            mediaPlayer.reset()
+            mediaPlayer.setDataSource(inputStream.fd)
+            mediaPlayer.prepare()
+            mediaPlayer.start()
         } catch (e: Exception) {
             e.printStackTrace()
             showError(e.message?: "default")
@@ -83,7 +84,6 @@ open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRe
     }
 
     private fun handleResult(file: FileInputStream?, context: Context) {
-//        Toast.makeText(context, file.toString().length, Toast.LENGTH_SHORT).show()
         showSuccess(file.toString().length.toString())
     }
 
