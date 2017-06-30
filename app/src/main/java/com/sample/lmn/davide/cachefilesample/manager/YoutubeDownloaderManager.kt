@@ -2,6 +2,7 @@ package com.sample.lmn.davide.cachefilesample.manager
 
 import android.net.Uri
 import com.sample.lmn.davide.cachefilesample.BuildConfig
+import com.sample.lmn.davide.cachefilesample.models.YoutubeDownloaderFile
 import com.sample.lmn.davide.cachefilesample.modules.YoutubeDownloaderModule.YoutubeDownloaderService
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
@@ -24,13 +25,13 @@ class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderSe
     /**
      * handle sound track
      */
-    fun getSoundTrack(soundTrackObsservable: Observable<String>) {
+    fun getSoundTrack(soundTrackObsservable: Observable<YoutubeDownloaderFile>) {
         soundTrackObsservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .doOnError { throwable -> throwable.printStackTrace() }
-                .onErrorReturn { throwable -> "" }
-                .subscribe { soundTrackUrl -> downloadSoundtrackManager?.getSoundTrack(Uri.parse(soundTrackUrl)) }
+                .onErrorReturn { throwable -> null }
+                .subscribe { soundTrackUrl -> downloadSoundtrackManager?.getSoundTrack(Uri.parse(soundTrackUrl.link)) }
     }
 
     companion object {

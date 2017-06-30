@@ -4,6 +4,7 @@ import android.content.Context
 import com.sample.lmn.davide.cachefilesample.BuildConfig
 import com.sample.lmn.davide.cachefilesample.components.SoundTrackDownloaderComponent
 import com.sample.lmn.davide.cachefilesample.manager.YoutubeDownloaderManager
+import com.sample.lmn.davide.cachefilesample.models.YoutubeDownloaderFile
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
@@ -61,6 +62,6 @@ open class YoutubeDownloaderModule(context: Context, lst: SoundTrackDownloaderMo
      */
     interface YoutubeDownloaderService {
         @GET("fetch")
-        fun fetchUrlByVideoId(@Query("format") format: String, @Query("video") video: String): Observable<String>
+        fun fetchUrlByVideoId(@Query("format") format: String, @Query("video") video: String): Observable<YoutubeDownloaderFile>
     }
 }
