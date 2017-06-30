@@ -1,38 +1,30 @@
 package com.sample.lmn.davide.cachefilesample
 
-import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
-import com.android.volley.Response
-import com.android.volley.VolleyError
-import com.sample.lmn.davide.cachefilesample.components.DaggerDownloadManagerComponent
-import com.sample.lmn.davide.cachefilesample.components.DownloadManagerComponent
-import com.sample.lmn.davide.cachefilesample.manager.DownloadSoundtrackManager
-import com.sample.lmn.davide.cachefilesample.manager.FileStorageManager
-import com.sample.lmn.davide.cachefilesample.modules.DownloadManagerModule
+import com.sample.lmn.davide.cachefilesample.components.DaggerYoutubeDownloaderComponent
+import com.sample.lmn.davide.cachefilesample.components.YoutubeDownloaderComponent
+import com.sample.lmn.davide.cachefilesample.manager.YoutubeDownloaderManager
+import com.sample.lmn.davide.cachefilesample.modules.SoundTrackDownloaderModule
+import com.sample.lmn.davide.cachefilesample.modules.YoutubeDownloaderModule
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.FileInputStream
 import javax.inject.Inject
 
-open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRetrievesCallbacks, Response.Listener<Any>, Response.ErrorListener {
-
+open class MainActivity : AppCompatActivity(),
+        SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks {
     lateinit var mediaPlayer: MediaPlayer
 
     @Inject
-    lateinit var fileStorageManager: FileStorageManager
-    @Inject
-    lateinit var downloadSoundtrackManager: DownloadSoundtrackManager
+    lateinit var youtubeDownloaderManager: YoutubeDownloaderManager
 
-    val component: DownloadManagerComponent by lazy {
-        //building dagger component
-        DaggerDownloadManagerComponent
+    val component: YoutubeDownloaderComponent by lazy {
+        DaggerYoutubeDownloaderComponent
                 .builder()
-                .downloadManagerModule(DownloadManagerModule(applicationContext, this))
+                .youtubeDownloaderModule(YoutubeDownloaderModule(applicationContext, this))
                 .build()
     }
 
@@ -44,12 +36,12 @@ open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRe
     }
 
     private fun onInitView() {
+        clearButtonId.setOnClickListener { soundTrackUrlEditTextId.setText("") }
         playButtonId.setOnClickListener {
-            val soundTrackUrl = soundTrackUrlEditTextId.text.toString()
-            //make coroutine
-            downloadSoundtrackManager.getFileFromUrl(Uri.parse(soundTrackUrl))
-            downloadSoundtrackManager.setLst(this)
-            downloadSoundtrackManager.setLst2(this)
+            //TODO make coroutine
+            val videoId = soundTrackUrlEditTextId.text.toString()
+//            downloadSoundtrackManager.getSoundTrack(Uri.parse(soundTrackUrl))
+            youtubeDownloaderManager.fetchSoundTrackUrlByVideoId(videoId)
         }
         initMediaPlayer()
     }
@@ -59,7 +51,7 @@ open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRe
      */
     private fun initMediaPlayer() {
         mediaPlayer = MediaPlayer()
-        mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
     }
 
     /**
@@ -79,39 +71,25 @@ open class MainActivity : AppCompatActivity(), FileStorageManager.OnCacheEntryRe
 
     }
 
-    private fun showError(message: String) {
-        Snackbar.make(findViewById(R.id.mainActivityLayoutId), message, Snackbar.LENGTH_LONG).show()
-    }
-
-    private fun handleResult(file: FileInputStream?, context: Context) {
-        showSuccess(file.toString().length.toString())
-    }
-
-    override fun onCacheEntryRetrieved(fileInputStream: FileInputStream) {
+    override fun onSoundTrackRetrieveSuccess(fileInputStream: FileInputStream) {
         runOnUiThread {
             playCachedFile(fileInputStream)
-            handleResult(fileInputStream, applicationContext)
+            showSuccess("sound track successfully downloaded")
         }
     }
 
-    override fun onCacheEntryRetrieveError(message: String?) {
-        showError(message?: "Error")
-    }
-
-    override fun onErrorResponse(error: VolleyError) {
-        Log.e(javaClass.name, "download error - " + error.message)
-
-    }
-
-    override fun onResponse(response: Any) {
-        onCacheEntryRetrieved(FileInputStream(response as String))
-//        showSuccess((response as ByteArray).size.toString())
-//        Log.e(javaClass.name, "download ok- " + response.size)
+    override fun onSoundTrackRetrieveError(message: String?) {
+        showError("error" + message)
     }
 
     fun showSuccess(message: String) {
         Snackbar.make(findViewById(R.id.mainActivityLayoutId), message, Snackbar.LENGTH_LONG).show()
     }
+
+    fun showError(message: String) {
+        Snackbar.make(findViewById(R.id.mainActivityLayoutId), message, Snackbar.LENGTH_LONG).show()
+    }
+
 
     companion object {
         private val FILENAME_SAMPLE = "mozart_sample.mp3"

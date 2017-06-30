@@ -12,6 +12,9 @@ android {
         exclude 'META-INF/NOTICE'
     }
     defaultConfig {
+        buildConfigField "String", "YOUTUBE_BASE_PATH", "\"https://www.youtube.com/watch?v=\""
+        buildConfigField "String", "YOUTUBE_DOWNLOADER_BASE_PATH", "\"http://www.youtubeinmp3.com/\""
+
         applicationId "com.sample.lmn.davide.cachefilesample"
         minSdkVersion 21
         targetSdkVersion 26
@@ -44,6 +47,11 @@ dependencies {
 
     //Anko Commons
     compile "org.jetbrains.anko:anko-commons:$anko_version"
+
+    //retrofit
+    compile "com.squareup.retrofit2:retrofit:$retrofit_version"
+    compile "com.squareup.retrofit2:adapter-rxjava:$retrofit_version"
+    compile "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
     //dagger
     compile "com.google.dagger:dagger:$dagger_version"

@@ -3,6 +3,7 @@ package com.sample.lmn.davide.cachefilesample.manager
 import android.content.Context
 import android.util.Base64
 import com.sample.lmn.davide.cachefilesample.models.SoundTrack
+import com.sample.lmn.davide.cachefilesample.modules.SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks
 import com.vicpin.krealmextensions.query
 import com.vicpin.krealmextensions.save
 import io.realm.Realm
@@ -16,9 +17,9 @@ import java.lang.ref.WeakReference
  * Created by davide-syn on 6/26/17.
  */
 
-class FileStorageManager(context: Context?, lst: FileStorageManager.OnCacheEntryRetrievesCallbacks) {
-    private val lst: WeakReference<OnCacheEntryRetrievesCallbacks> = WeakReference(lst)
-    private val fileDir: File? = context?.filesDir
+class FileStorageManager(context: Context?, lst: OnSoundTrackRetrievesCallbacks) {
+    val lst: WeakReference<OnSoundTrackRetrievesCallbacks> = WeakReference(lst)
+    val fileDir: File? = context?.filesDir
     init {
         Realm.init(context)
     }
@@ -80,17 +81,12 @@ class FileStorageManager(context: Context?, lst: FileStorageManager.OnCacheEntry
                 val stream = FileOutputStream(file)
                 stream.write(downloadedFile)
                 stream.close()
-                lst.get()?.onCacheEntryRetrieved(FileInputStream(file))
+                lst.get()?.onSoundTrackRetrieveSuccess(FileInputStream(file))
             } catch (e: IOException) {
                 e.printStackTrace()
-                lst.get()?.onCacheEntryRetrieveError(e.message)
+                lst.get()?.onSoundTrackRetrieveError(e.message)
             }
         }).start()
-    }
-
-    interface OnCacheEntryRetrievesCallbacks {
-        fun onCacheEntryRetrieved(fileInputStream: FileInputStream)
-        fun onCacheEntryRetrieveError(message: String?)
     }
 
     fun retrieveFile(key: String): ByteArray? {

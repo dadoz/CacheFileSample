@@ -7,7 +7,9 @@ buildscript {
         appcompat_version =  "26.+"
         dagger_version = "2.11"
         realm_version = "3.4.0"
+        retrofit_version = "2.3.0"
     }
+
 
     repositories {
         jcenter()
