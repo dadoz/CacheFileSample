@@ -14,8 +14,8 @@ import java.util.*
  * Created by davide-syn on 6/26/17.
  */
 
-class DownloadSoundtrackManager(context: Context?, private val fileStorageManager: FileStorageManager,
-                                val lst: Response.Listener<Any>, val lst2: Response.ErrorListener) {
+class SoundTrackDownloaderManager(context: Context?, private val fileStorageManager: FileStorageManager,
+                                  val lst: Response.Listener<Any>, val lst2: Response.ErrorListener) {
     val volleyReqQueue: RequestQueue = Volley.newRequestQueue(context)
 
     /**

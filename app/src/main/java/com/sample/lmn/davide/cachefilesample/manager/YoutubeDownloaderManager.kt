@@ -11,8 +11,8 @@ import rx.schedulers.Schedulers
 /**
  * Created by davide-syn on 6/30/17.
  */
-class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderService,
-                               val downloadSoundtrackManager: DownloadSoundtrackManager?) {
+class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderService) {
+    var soundTrackDownloaderManager: SoundTrackDownloaderManager? = null
     /**
      * @return
      */
@@ -31,11 +31,12 @@ class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderSe
                 .subscribeOn(Schedulers.newThread())
                 .doOnError { throwable -> throwable.printStackTrace() }
                 .onErrorReturn { throwable -> null }
-                .subscribe { soundTrackUrl -> downloadSoundtrackManager?.getSoundTrack(Uri.parse(soundTrackUrl.link)) }
+                .subscribe { soundTrackUrl -> soundTrackDownloaderManager?.getSoundTrack(Uri.parse(soundTrackUrl.link)) }
     }
 
     companion object {
         val FORMAT_TYPE = "JSON"
     }
+
 
 }

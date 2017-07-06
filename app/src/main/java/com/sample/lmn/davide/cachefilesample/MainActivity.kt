@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import com.sample.lmn.davide.cachefilesample.components.DaggerYoutubeDownloaderComponent
 import com.sample.lmn.davide.cachefilesample.components.YoutubeDownloaderComponent
+import com.sample.lmn.davide.cachefilesample.manager.SoundTrackDownloaderManager
 import com.sample.lmn.davide.cachefilesample.manager.YoutubeDownloaderManager
 import com.sample.lmn.davide.cachefilesample.modules.SoundTrackDownloaderModule
 import com.sample.lmn.davide.cachefilesample.modules.YoutubeDownloaderModule
@@ -19,12 +20,15 @@ open class MainActivity : AppCompatActivity(),
     lateinit var mediaPlayer: MediaPlayer
 
     @Inject
+    lateinit var soundTrackDownloaderManager: SoundTrackDownloaderManager
+    @Inject
     lateinit var youtubeDownloaderManager: YoutubeDownloaderManager
 
     val component: YoutubeDownloaderComponent by lazy {
         DaggerYoutubeDownloaderComponent
                 .builder()
-                .youtubeDownloaderModule(YoutubeDownloaderModule(applicationContext, this))
+                .soundTrackDownloaderModule(SoundTrackDownloaderModule(applicationContext, this))
+                .youtubeDownloaderModule(YoutubeDownloaderModule())
                 .build()
     }
 
@@ -32,6 +36,7 @@ open class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         component.inject(this)
+        youtubeDownloaderManager.soundTrackDownloaderManager = this.soundTrackDownloaderManager
         onInitView()
     }
 

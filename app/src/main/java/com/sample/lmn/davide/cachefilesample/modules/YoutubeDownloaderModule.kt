@@ -1,8 +1,6 @@
 package com.sample.lmn.davide.cachefilesample.modules
 
-import android.content.Context
 import com.sample.lmn.davide.cachefilesample.BuildConfig
-import com.sample.lmn.davide.cachefilesample.components.SoundTrackDownloaderComponent
 import com.sample.lmn.davide.cachefilesample.manager.YoutubeDownloaderManager
 import com.sample.lmn.davide.cachefilesample.models.YoutubeDownloaderFile
 import dagger.Module
@@ -13,21 +11,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 import rx.Observable
-import javax.inject.Inject
-import javax.inject.Provider
 
 /**
  * Created by davide-syn on 6/29/17.
  */
-@Module
-open class YoutubeDownloaderModule(context: Context, lst: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks) {
+@Module(includes = arrayOf(SoundTrackDownloaderModule::class))
+open class YoutubeDownloaderModule {
     var youtubeDownloaderAp: YoutubeDownloaderService
-
-    @Inject
-    lateinit var provider: Provider<SoundTrackDownloaderComponent.Builder>
-
-    //component injection
-    val component: SoundTrackDownloaderComponent? = null
 
     /**
      * constructor
@@ -41,10 +31,6 @@ open class YoutubeDownloaderModule(context: Context, lst: SoundTrackDownloaderMo
 
         youtubeDownloaderAp = retrofit.create(YoutubeDownloaderService::class.java)
 
-//        //inject subcomponent
-//        component = provider.get()
-//                .soundTrackDownloaderModule(SoundTrackDownloaderModule(context, lst))
-//                .build()
     }
 
     @Provides
@@ -54,7 +40,7 @@ open class YoutubeDownloaderModule(context: Context, lst: SoundTrackDownloaderMo
 
     @Provides
     fun provideYoutubeDownloadManager(): YoutubeDownloaderManager {
-        return YoutubeDownloaderManager(youtubeDownloaderAp, component?.downloadSoundTrackManager())
+        return YoutubeDownloaderManager(youtubeDownloaderAp)
     }
 
     /**

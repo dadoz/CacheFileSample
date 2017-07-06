@@ -2,7 +2,7 @@ package com.sample.lmn.davide.cachefilesample.modules
 
 import android.content.Context
 import com.android.volley.Response
-import com.sample.lmn.davide.cachefilesample.manager.DownloadSoundtrackManager
+import com.sample.lmn.davide.cachefilesample.manager.SoundTrackDownloaderManager
 import com.sample.lmn.davide.cachefilesample.manager.FileStorageManager
 import dagger.Module
 import dagger.Provides
@@ -24,10 +24,10 @@ open class SoundTrackDownloaderModule(context: Context, lst: OnSoundTrackRetriev
 //    }
 
     @Provides
-    fun provideSoundtrackManager(): DownloadSoundtrackManager {
+    fun provideSoundtrackManager(): SoundTrackDownloaderManager {
         val lst1 = Response.Listener<Any> { result -> println(result.toString().length) }
         val lst2 = Response.ErrorListener { error -> println(error.message) }
-        return DownloadSoundtrackManager(context.get(), fileStorageManager, lst1, lst2)
+        return SoundTrackDownloaderManager(context.get(), fileStorageManager, lst1, lst2)
     }
 
     interface OnSoundTrackRetrievesCallbacks {
