@@ -1,5 +1,7 @@
-package com.sample.lmn.davide.cachefilesample.modules
+package com.lib.lmn.davide.soundtrackdownloaderlibrary.modules
 
+import com.lib.lmn.davide.soundtrackdownloaderlibrary.manager.YoutubeDownloaderManager
+import com.lib.lmn.davide.soundtrackdownloaderlibrary.models.YoutubeDownloaderFile
 import com.sample.lmn.davide.cachefilesample.BuildConfig
 import com.sample.lmn.davide.cachefilesample.manager.YoutubeDownloaderManager
 import com.sample.lmn.davide.cachefilesample.models.YoutubeDownloaderFile

@@ -1,4 +1,4 @@
-package com.sample.lmn.davide.cachefilesample.manager
+package com.lib.lmn.davide.soundtrackdownloaderlibrary.manager
 
 import android.content.Context
 import android.net.Uri
@@ -14,8 +14,8 @@ import java.util.*
  * Created by davide-syn on 6/26/17.
  */
 
-class SoundTrackDownloaderManager(context: Context?, private val fileStorageManager: FileStorageManager,
-                                  val lst: Response.Listener<Any>, val lst2: Response.ErrorListener) {
+class FileDownloaderManager(context: Context?, private val fileStorageManager: FileStorageManager,
+                            val lst: Response.Listener<Any>, val lst2: Response.ErrorListener) {
     val volleyReqQueue: RequestQueue = Volley.newRequestQueue(context)
 
     /**

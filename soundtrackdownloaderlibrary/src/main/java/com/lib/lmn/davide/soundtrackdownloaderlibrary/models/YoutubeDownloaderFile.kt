@@ -1,4 +1,4 @@
-package com.sample.lmn.davide.cachefilesample.models
+package com.lib.lmn.davide.soundtrackdownloaderlibrary.models
 
 /**
  * Created by davide-syn on 6/30/17.

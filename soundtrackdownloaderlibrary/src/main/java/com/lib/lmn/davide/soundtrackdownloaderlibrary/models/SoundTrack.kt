@@ -1,4 +1,4 @@
-package com.sample.lmn.davide.cachefilesample.models
+package com.lib.lmn.davide.soundtrackdownloaderlibrary.models
 
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey

@@ -1,4 +1,4 @@
-package com.sample.lmn.davide.cachefilesample.manager
+package com.lib.lmn.davide.soundtrackdownloaderlibrary.manager
 
 import android.content.Context
 import android.util.Base64

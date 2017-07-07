@@ -5,12 +5,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import com.sample.lmn.davide.cachefilesample.components.DaggerYoutubeDownloaderComponent
-import com.sample.lmn.davide.cachefilesample.components.YoutubeDownloaderComponent
-import com.sample.lmn.davide.cachefilesample.manager.SoundTrackDownloaderManager
-import com.sample.lmn.davide.cachefilesample.manager.YoutubeDownloaderManager
-import com.sample.lmn.davide.cachefilesample.modules.SoundTrackDownloaderModule
-import com.sample.lmn.davide.cachefilesample.modules.YoutubeDownloaderModule
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.FileInputStream
 import javax.inject.Inject
@@ -19,40 +13,27 @@ open class MainActivity : AppCompatActivity(),
         SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks {
     lateinit var mediaPlayer: MediaPlayer
 
-    @Inject
-    lateinit var soundTrackDownloaderManager: SoundTrackDownloaderManager
-    @Inject
-    lateinit var youtubeDownloaderManager: YoutubeDownloaderManager
-
-    val component: YoutubeDownloaderComponent by lazy {
-        DaggerYoutubeDownloaderComponent
-                .builder()
-                .soundTrackDownloaderModule(SoundTrackDownloaderModule(applicationContext, this))
-                .youtubeDownloaderModule(YoutubeDownloaderModule())
-                .build()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         component.inject(this)
-        youtubeDownloaderManager.soundTrackDownloaderManager = this.soundTrackDownloaderManager
         onInitView()
     }
 
+    /**
+     *
+     */
     private fun onInitView() {
         clearButtonId.setOnClickListener { soundTrackUrlEditTextId.setText("") }
         playButtonId.setOnClickListener {
-            //TODO make coroutine
-            val videoId = soundTrackUrlEditTextId.text.toString()
-//            downloadSoundtrackManager.getSoundTrack(Uri.parse(soundTrackUrl))
-            youtubeDownloaderManager.fetchSoundTrackUrlByVideoId(videoId)
+            youtubeDownloaderManager.fetchSoundTrackUrlByVideoId(soundTrackDownloaderManager,
+                    soundTrackUrlEditTextId.text.toString())
         }
         initMediaPlayer()
     }
 
     /**
-
+     *
      */
     private fun initMediaPlayer() {
         mediaPlayer = MediaPlayer()
@@ -60,7 +41,7 @@ open class MainActivity : AppCompatActivity(),
     }
 
     /**
-
+     *
      */
     private fun playCachedFile(inputStream: FileInputStream) {
         try {
@@ -73,9 +54,11 @@ open class MainActivity : AppCompatActivity(),
             e.printStackTrace()
             showError(e.message?: "default")
         }
-
     }
 
+    /**
+     *
+     */
     override fun onSoundTrackRetrieveSuccess(fileInputStream: FileInputStream) {
         runOnUiThread {
             playCachedFile(fileInputStream)
@@ -83,19 +66,30 @@ open class MainActivity : AppCompatActivity(),
         }
     }
 
+    /**
+     *
+     */
     override fun onSoundTrackRetrieveError(message: String?) {
         showError("error" + message)
     }
 
+    /**
+     *
+     */
     fun showSuccess(message: String) {
         Snackbar.make(findViewById(R.id.mainActivityLayoutId), message, Snackbar.LENGTH_LONG).show()
     }
 
+    /**
+     *
+     */
     fun showError(message: String) {
         Snackbar.make(findViewById(R.id.mainActivityLayoutId), message, Snackbar.LENGTH_LONG).show()
     }
 
-
+    /**
+     *
+     */
     companion object {
         private val FILENAME_SAMPLE = "mozart_sample.mp3"
         private val REMOTE_FILE = "http://www.amclassical.com/mp3/amclassical_moonlight_sonata_movement_1.mp3"
