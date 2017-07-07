@@ -1,7 +1,9 @@
 package com.lib.lmn.davide.soundtrackdownloaderlibrary.manager
 
 import android.net.Uri
+import com.lib.lmn.davide.soundtrackdownloaderlibrary.BuildConfig
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.models.YoutubeDownloaderFile
+import com.lib.lmn.davide.soundtrackdownloaderlibrary.modules.YoutubeDownloaderModule
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -9,7 +11,7 @@ import rx.schedulers.Schedulers
 /**
  * Created by davide-syn on 6/30/17.
  */
-class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderService) {
+class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderModule.YoutubeDownloaderService) {
     lateinit var soundTrackDownloaderManager: FileDownloaderManager
 
     /**

@@ -5,18 +5,21 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import com.lib.lmn.davide.soundtrackdownloaderlibrary.manager.SoundTrackDownloaderManager
+import com.lib.lmn.davide.soundtrackdownloaderlibrary.modules.SoundTrackDownloaderModule
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.FileInputStream
-import javax.inject.Inject
 
-open class MainActivity : AppCompatActivity(),
-        SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks {
+open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks {
     lateinit var mediaPlayer: MediaPlayer
+
+    val soundTrackDownloaderManager: SoundTrackDownloaderManager by lazy {
+        SoundTrackDownloaderManager(applicationContext, this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        component.inject(this)
         onInitView()
     }
 
@@ -25,10 +28,10 @@ open class MainActivity : AppCompatActivity(),
      */
     private fun onInitView() {
         clearButtonId.setOnClickListener { soundTrackUrlEditTextId.setText("") }
-        playButtonId.setOnClickListener {
-            youtubeDownloaderManager.fetchSoundTrackUrlByVideoId(soundTrackDownloaderManager,
-                    soundTrackUrlEditTextId.text.toString())
-        }
+        playButtonId.setOnClickListener { soundTrackDownloaderManager.downloadAndPlaySoundTrack(soundTrackUrlEditTextId.text.toString()) }
+//            youtubeDownloaderManager.fetchSoundTrackUrlByVideoId(soundTrackDownloaderManager,
+//                    soundTrackUrlEditTextId.text.toString())
+//        }
         initMediaPlayer()
     }
 

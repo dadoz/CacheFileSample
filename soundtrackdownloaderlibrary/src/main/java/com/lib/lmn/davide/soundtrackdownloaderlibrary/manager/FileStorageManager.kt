@@ -2,8 +2,8 @@ package com.lib.lmn.davide.soundtrackdownloaderlibrary.manager
 
 import android.content.Context
 import android.util.Base64
-import com.sample.lmn.davide.cachefilesample.models.SoundTrack
-import com.sample.lmn.davide.cachefilesample.modules.SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks
+import com.lib.lmn.davide.soundtrackdownloaderlibrary.models.SoundTrack
+import com.lib.lmn.davide.soundtrackdownloaderlibrary.modules.SoundTrackDownloaderModule
 import com.vicpin.krealmextensions.query
 import com.vicpin.krealmextensions.save
 import io.realm.Realm
@@ -17,8 +17,8 @@ import java.lang.ref.WeakReference
  * Created by davide-syn on 6/26/17.
  */
 
-class FileStorageManager(context: Context?, lst: OnSoundTrackRetrievesCallbacks) {
-    val lst: WeakReference<OnSoundTrackRetrievesCallbacks> = WeakReference(lst)
+class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks) {
+    val lst: WeakReference<SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks> = WeakReference(lst)
     val fileDir: File? = context?.filesDir
     init {
         Realm.init(context)
