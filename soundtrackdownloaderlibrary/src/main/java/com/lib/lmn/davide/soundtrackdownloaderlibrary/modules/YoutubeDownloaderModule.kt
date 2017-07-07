@@ -34,11 +34,6 @@ open class YoutubeDownloaderModule {
     }
 
     @Provides
-    fun provideYoutubeDownloaderService(): YoutubeDownloaderService {
-        return youtubeDownloaderAp
-    }
-
-    @Provides
     fun provideYoutubeDownloadManager(): YoutubeDownloaderManager {
         return YoutubeDownloaderManager(youtubeDownloaderAp)
     }

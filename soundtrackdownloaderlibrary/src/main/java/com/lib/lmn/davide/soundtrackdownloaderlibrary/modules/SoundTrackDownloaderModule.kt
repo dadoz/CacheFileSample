@@ -13,11 +13,10 @@ import java.io.FileInputStream
  */
 @Module
 open class SoundTrackDownloaderModule(val context: Context, lst: OnSoundTrackRetrievesCallbacks) {
-//    val context: WeakReference<Context> = WeakReference(context)
     val fileStorageManager: FileStorageManager = FileStorageManager(context, lst)
 
     @Provides
-    fun provideSoundtrackManager(): FileDownloaderManager {
+    fun provideFileDownloaderManager(): FileDownloaderManager {
         val lst1 = Response.Listener<Any> { result -> println(result.toString().length) }
         val lst2 = Response.ErrorListener { error -> println(error.message) }
         return FileDownloaderManager(context, fileStorageManager, lst1, lst2)

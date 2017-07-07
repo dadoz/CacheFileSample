@@ -12,7 +12,7 @@ import rx.schedulers.Schedulers
  * Created by davide-syn on 6/30/17.
  */
 class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderModule.YoutubeDownloaderService) {
-    lateinit var soundTrackDownloaderManager: FileDownloaderManager
+    lateinit var fileDownloadManager: FileDownloaderManager
 
     /**
      * handle sound track
@@ -23,7 +23,7 @@ class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderMo
                 .subscribeOn(Schedulers.newThread())
                 .doOnError { throwable -> throwable.printStackTrace() }
                 .onErrorReturn { throwable -> null }
-                .subscribe { soundTrackUrl -> soundTrackDownloaderManager.getSoundTrack(Uri.parse(soundTrackUrl.link)) }
+                .subscribe { soundTrackUrl -> fileDownloadManager.getSoundTrack(Uri.parse(soundTrackUrl.link)) }
     }
 
     companion object {
@@ -33,8 +33,8 @@ class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderMo
     /**
      * @return
      */
-    fun fetchSoundTrackUrlByVideoId(videoId: FileDownloaderManager, videoId1: String) {
-        this.soundTrackDownloaderManager = soundTrackDownloaderManager
+    fun fetchSoundTrackUrlByVideoId(fileDownloadManager: FileDownloaderManager, videoId: String) {
+        this.fileDownloadManager = fileDownloadManager
 
         val observable =  youtubeDownloaderService.fetchUrlByVideoId(FORMAT_TYPE,
                 BuildConfig.YOUTUBE_BASE_PATH + videoId)

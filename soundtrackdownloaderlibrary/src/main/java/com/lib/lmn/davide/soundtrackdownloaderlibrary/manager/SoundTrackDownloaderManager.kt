@@ -11,7 +11,7 @@ import javax.inject.Inject
  * Created by davide-syn on 7/7/17.
  */
 
-class SoundTrackDownloaderManager(val context: Context, val listener: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks) {
+open class SoundTrackDownloaderManager(val context: Context, val listener: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks) {
     @Inject
     lateinit var fileDownloaderManager: FileDownloaderManager
     @Inject

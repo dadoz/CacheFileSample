@@ -28,10 +28,8 @@ open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSou
      */
     private fun onInitView() {
         clearButtonId.setOnClickListener { soundTrackUrlEditTextId.setText("") }
-        playButtonId.setOnClickListener { soundTrackDownloaderManager.downloadAndPlaySoundTrack(soundTrackUrlEditTextId.text.toString()) }
-//            youtubeDownloaderManager.fetchSoundTrackUrlByVideoId(soundTrackDownloaderManager,
-//                    soundTrackUrlEditTextId.text.toString())
-//        }
+        playButtonId.setOnClickListener { soundTrackDownloaderManager
+                .downloadAndPlaySoundTrack(soundTrackUrlEditTextId.text.toString()) }
         initMediaPlayer()
     }
 
