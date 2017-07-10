@@ -8,9 +8,7 @@ import com.lib.lmn.davide.soundtrackdownloaderlibrary.modules.YoutubeDownloaderM
  * Created by davide-syn on 7/7/17.
  */
 
-class SoundTrackDownloaderManager private constructor() {
-    var context: Context? = null
-    var listener: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks? = null
+class SoundTrackDownloaderManager private constructor(context: Context, listener: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks) {
     val fileDownloaderManager: FileDownloaderManager = SoundTrackDownloaderModule(context, listener).getFileDownloaderManager()
     var youtubeDownloaderManager: YoutubeDownloaderManager = YoutubeDownloaderModule(fileDownloaderManager).getYoutubeDownloadManager()
 
@@ -22,6 +20,10 @@ class SoundTrackDownloaderManager private constructor() {
 
     companion object {
         lateinit var instance: SoundTrackDownloaderManager
-            private set
+
+        fun getInstance(context: Context, listener: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks): SoundTrackDownloaderManager {
+            instance = SoundTrackDownloaderManager(context, listener)
+            return instance
+        }
     }
 }

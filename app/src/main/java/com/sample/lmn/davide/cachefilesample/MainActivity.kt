@@ -5,26 +5,34 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import com.google.api.services.youtube.model.SearchResult
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.manager.SoundTrackDownloaderManager
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.modules.SoundTrackDownloaderModule
+import com.sample.lmn.davide.cachefilesample.adapter.SoundTrackRvAdapter
+import com.sample.lmn.davide.cachefilesample.managers.YoutubeOnSearchByQueryResults
+import com.sample.lmn.davide.cachefilesample.managers.YoutubeV3AuthenticatorManager
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.FileInputStream
+import java.lang.ref.WeakReference
 
-open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks {
+open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks,
+        YoutubeOnSearchByQueryResults {
+
     lateinit var mediaPlayer: MediaPlayer
 
     val soundTrackDownloaderManager: SoundTrackDownloaderManager by lazy {
-        SoundTrackDownloaderManager.instance
+        SoundTrackDownloaderManager.getInstance(this, this)
+    }
+
+    val youtubeDownloadManager: YoutubeV3AuthenticatorManager by lazy {
+        YoutubeV3AuthenticatorManager("bla", WeakReference(this))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        //set context and listener
-        soundTrackDownloaderManager.context = this
-        soundTrackDownloaderManager.listener = this
-
         //init view
         onInitView()
     }
@@ -34,8 +42,12 @@ open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSou
      */
     private fun onInitView() {
         clearButtonId.setOnClickListener { soundTrackUrlEditTextId.setText("") }
-        playButtonId.setOnClickListener { soundTrackDownloaderManager
-                .downloadAndPlaySoundTrack(soundTrackUrlEditTextId.text.toString()) }
+        playButtonId.setOnClickListener {
+            youtubeDownloadManager.searchByQuery(soundTrackUrlEditTextId.text.toString())
+        }
+
+        recyclerViewId.layoutManager = LinearLayoutManager(applicationContext)
+        recyclerViewId.adapter = SoundTrackRvAdapter()
         initMediaPlayer()
     }
 
@@ -52,7 +64,7 @@ open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSou
      */
     private fun playCachedFile(inputStream: FileInputStream) {
         try {
-            showSuccess("eureka");
+            showSuccess("eureka")
             mediaPlayer.reset()
             mediaPlayer.setDataSource(inputStream.fd)
             mediaPlayer.prepare()
@@ -83,6 +95,21 @@ open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSou
     /**
      *
      */
+    override fun youtubeSearchResultSuccess(list: List<SearchResult>, query: String?) {
+        showSuccess("$query --- ${list.size}")
+        soundTrackDownloaderManager.downloadAndPlaySoundTrack(list[0].id.videoId)
+    }
+
+    /**
+     *
+     */
+    override fun youtubeSearchResultError(message: String, query: String?) {
+        showError("error" + message)
+    }
+
+    /**
+     *
+     */
     fun showSuccess(message: String) {
         Snackbar.make(findViewById(R.id.mainActivityLayoutId), message, Snackbar.LENGTH_LONG).show()
     }
@@ -103,3 +130,4 @@ open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSou
     }
 
 }
+
