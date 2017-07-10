@@ -17,8 +17,8 @@ import java.lang.ref.WeakReference
  * Created by davide-syn on 6/26/17.
  */
 
-class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks) {
-    val lst: WeakReference<SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks> = WeakReference(lst)
+class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks?) {
+    val lst: WeakReference<SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks?> = WeakReference(lst)
     val fileDir: File? = context?.filesDir
     init {
         Realm.init(context)
@@ -52,7 +52,7 @@ class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSo
         val soundTrack = SoundTrack().query { query -> query.equalTo("key", encodedKey) }
 
         if (soundTrack.isEmpty())
-            return null;
+            return null
         return soundTrack[0].key
     }
 
@@ -99,6 +99,9 @@ class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSo
         }
     }
 
+    /**
+     * get full path
+     */
     fun getFullPath(key: String): Any? {
         val parsedKey = generateEncodedKey(key)
         return "$fileDir/$parsedKey"

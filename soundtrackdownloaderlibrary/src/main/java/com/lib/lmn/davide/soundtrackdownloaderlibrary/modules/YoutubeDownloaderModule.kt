@@ -1,10 +1,9 @@
 package com.lib.lmn.davide.soundtrackdownloaderlibrary.modules
 
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.BuildConfig
+import com.lib.lmn.davide.soundtrackdownloaderlibrary.manager.FileDownloaderManager
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.manager.YoutubeDownloaderManager
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.models.YoutubeDownloaderFile
-import dagger.Module
-import dagger.Provides
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -15,8 +14,7 @@ import rx.Observable
 /**
  * Created by davide-syn on 6/29/17.
  */
-@Module(includes = arrayOf(SoundTrackDownloaderModule::class))
-open class YoutubeDownloaderModule {
+open class YoutubeDownloaderModule(val fileDownloaderManager: FileDownloaderManager) {
     var youtubeDownloaderAp: YoutubeDownloaderService
 
     /**
@@ -33,9 +31,8 @@ open class YoutubeDownloaderModule {
 
     }
 
-    @Provides
-    fun provideYoutubeDownloadManager(): YoutubeDownloaderManager {
-        return YoutubeDownloaderManager(youtubeDownloaderAp)
+    fun getYoutubeDownloadManager(): YoutubeDownloaderManager {
+        return YoutubeDownloaderManager(youtubeDownloaderAp, fileDownloaderManager)
     }
 
     /**

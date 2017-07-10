@@ -58,11 +58,6 @@ dependencies {
     compile "com.squareup.retrofit2:adapter-rxjava:$retrofit_version"
     compile "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
-    //dagger
-    compile "com.google.dagger:dagger:$dagger_version"
-    kapt "com.google.dagger:dagger-compiler:$dagger_version"
-    provided 'org.glassfish:javax.annotation:10.0-b28'
-
     //extension realm kotling
     compile 'com.github.vicpinm:krealmextensions:1.0.8'
     kapt "io.realm:realm-annotations-processor:$realm_version"

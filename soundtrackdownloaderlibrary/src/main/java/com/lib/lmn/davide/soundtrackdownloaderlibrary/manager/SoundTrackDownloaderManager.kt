@@ -1,35 +1,27 @@
 package com.lib.lmn.davide.soundtrackdownloaderlibrary.manager
 
 import android.content.Context
-import com.lib.lmn.davide.soundtrackdownloaderlibrary.components.DaggerYoutubeDownloaderComponent
-import com.lib.lmn.davide.soundtrackdownloaderlibrary.components.YoutubeDownloaderComponent
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.modules.SoundTrackDownloaderModule
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.modules.YoutubeDownloaderModule
-import javax.inject.Inject
 
 /**
  * Created by davide-syn on 7/7/17.
  */
 
-open class SoundTrackDownloaderManager(val context: Context, val listener: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks) {
-    @Inject
-    lateinit var fileDownloaderManager: FileDownloaderManager
-    @Inject
-    lateinit var youtubeDownloaderManager: YoutubeDownloaderManager
-
-    val component: YoutubeDownloaderComponent by lazy {
-        DaggerYoutubeDownloaderComponent
-                .builder()
-                .soundTrackDownloaderModule(SoundTrackDownloaderModule(context, listener))
-                .youtubeDownloaderModule(YoutubeDownloaderModule())
-                .build()
-    }
+class SoundTrackDownloaderManager private constructor() {
+    var context: Context? = null
+    var listener: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks? = null
+    val fileDownloaderManager: FileDownloaderManager = SoundTrackDownloaderModule(context, listener).getFileDownloaderManager()
+    var youtubeDownloaderManager: YoutubeDownloaderManager = YoutubeDownloaderModule(fileDownloaderManager).getYoutubeDownloadManager()
 
     init {
-        component.inject(this)
+        instance = this
     }
 
-    fun downloadAndPlaySoundTrack(videoId: String) {
-        youtubeDownloaderManager.fetchSoundTrackUrlByVideoId(fileDownloaderManager, videoId)
+    fun downloadAndPlaySoundTrack(videoId: String) = youtubeDownloaderManager.fetchSoundTrackUrlByVideoId(videoId)
+
+    companion object {
+        lateinit var instance: SoundTrackDownloaderManager
+            private set
     }
 }

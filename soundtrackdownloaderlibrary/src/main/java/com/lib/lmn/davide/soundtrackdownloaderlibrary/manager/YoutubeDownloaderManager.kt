@@ -11,19 +11,19 @@ import rx.schedulers.Schedulers
 /**
  * Created by davide-syn on 6/30/17.
  */
-class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderModule.YoutubeDownloaderService) {
-    lateinit var fileDownloadManager: FileDownloaderManager
+class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderModule.YoutubeDownloaderService,
+                               val fileDownloaderManager: FileDownloaderManager) {
 
     /**
      * handle sound track
      */
-    fun getSoundTrack(soundTrackObsservable: Observable<YoutubeDownloaderFile>) {
-        soundTrackObsservable
+    fun getSoundTrack(soundTrackObservable: Observable<YoutubeDownloaderFile>) {
+        soundTrackObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .doOnError { throwable -> throwable.printStackTrace() }
-                .onErrorReturn { throwable -> null }
-                .subscribe { soundTrackUrl -> fileDownloadManager.getSoundTrack(Uri.parse(soundTrackUrl.link)) }
+                .onErrorReturn { null }
+                .subscribe { soundTrackUrl -> fileDownloaderManager.getSoundTrack(Uri.parse(soundTrackUrl.link)) }
     }
 
     companion object {
@@ -33,9 +33,7 @@ class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderMo
     /**
      * @return
      */
-    fun fetchSoundTrackUrlByVideoId(fileDownloadManager: FileDownloaderManager, videoId: String) {
-        this.fileDownloadManager = fileDownloadManager
-
+    fun fetchSoundTrackUrlByVideoId(videoId: String) {
         val observable =  youtubeDownloaderService.fetchUrlByVideoId(FORMAT_TYPE,
                 BuildConfig.YOUTUBE_BASE_PATH + videoId)
         getSoundTrack(observable)

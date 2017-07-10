@@ -4,19 +4,15 @@ import android.content.Context
 import com.android.volley.Response
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.manager.FileDownloaderManager
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.manager.FileStorageManager
-import dagger.Module
-import dagger.Provides
 import java.io.FileInputStream
 
 /**
  * Created by davide-syn on 6/26/17.
  */
-@Module
-open class SoundTrackDownloaderModule(val context: Context, lst: OnSoundTrackRetrievesCallbacks) {
+open class SoundTrackDownloaderModule(val context: Context?, lst: OnSoundTrackRetrievesCallbacks?) {
     val fileStorageManager: FileStorageManager = FileStorageManager(context, lst)
 
-    @Provides
-    fun provideFileDownloaderManager(): FileDownloaderManager {
+    fun getFileDownloaderManager(): FileDownloaderManager {
         val lst1 = Response.Listener<Any> { result -> println(result.toString().length) }
         val lst2 = Response.ErrorListener { error -> println(error.message) }
         return FileDownloaderManager(context, fileStorageManager, lst1, lst2)

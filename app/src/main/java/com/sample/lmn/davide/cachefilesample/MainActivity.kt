@@ -14,12 +14,18 @@ open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSou
     lateinit var mediaPlayer: MediaPlayer
 
     val soundTrackDownloaderManager: SoundTrackDownloaderManager by lazy {
-        SoundTrackDownloaderManager(applicationContext, this)
+        SoundTrackDownloaderManager.instance
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //set context and listener
+        soundTrackDownloaderManager.context = this
+        soundTrackDownloaderManager.listener = this
+
+        //init view
         onInitView()
     }
 
