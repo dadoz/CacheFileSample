@@ -1,7 +1,6 @@
 package com.lib.lmn.davide.soundtrackdownloaderlibrary.manager
 
 import android.content.Context
-import android.util.Base64
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.models.SoundTrack
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.modules.SoundTrackDownloaderModule
 import com.vicpin.krealmextensions.query
@@ -47,9 +46,9 @@ class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSo
      * *
      * @return
      */
-    operator fun get(key: String): String? {
-        val encodedKey = generateEncodedKey(key)
-        val soundTrack = SoundTrack().query { query -> query.equalTo("key", encodedKey) }
+    operator fun get(name: String): String? {
+        val key = generateEncodedKey(name)
+        val soundTrack = SoundTrack().query { query -> query.equalTo("key", key) }
 
         if (soundTrack.isEmpty())
             return null
@@ -63,15 +62,36 @@ class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSo
      * @return
      */
     private fun generateEncodedKey(key: String): String {
-        var encoded = Base64.encodeToString(key.toByteArray(), Base64.DEFAULT)
-                .replace("=", "").toLowerCase()
+//        var encoded = Base64.encodeToString(key.toByteArray(), Base64.DEFAULT)
+//                .replace("=", "").toLowerCase()
+        var encoded = key
+                .replace("http:\\\\", "")
+                .replace("/", "")
+                .replace("=", "")
+                .toLowerCase()
         if (encoded.length >= 64)
             encoded = encoded.substring(0, 63)
         return encoded
     }
 
-    /***
+    //new algorithm to handle file name
+//    StringBuilder sb = new StringBuilder(len);
+//    for (int i = 0; i < len; i++) {
+//        char ch = s.charAt(i);
+//        if (ch < ' ' || ch >= 0x7F || ch == fileSep || ... // add other illegal chars
+//                || (ch == '.' && i == 0) // we don't want to collide with "." or ".."!
+//                || ch == escape) {
+//            sb.append(escape);
+//            if (ch < 0x10) {
+//                sb.append('0');
+//            }
+//            sb.append(Integer.toHexString(ch));
+//        } else {
+//            sb.append(ch);
+//        }
+//    }
 
+    /***
      * @param key
      */
     private fun saveFile(key: String?, downloadedFile: ByteArray) {
@@ -102,9 +122,9 @@ class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSo
     /**
      * get full path
      */
-    fun getFullPath(key: String): Any? {
-        val parsedKey = generateEncodedKey(key)
-        return "$fileDir/$parsedKey"
+    fun getFullPath(name: String): Any? {
+        val key = generateEncodedKey(name)
+        return "$fileDir/$key"
     }
 
 }
