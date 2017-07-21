@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager
 import com.google.api.services.youtube.model.SearchResult
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.manager.SoundTrackDownloaderManager
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.modules.SoundTrackDownloaderModule
+import com.sample.lmn.davide.cachefilesample.adapter.OnSoundTrackItemClickListener
 import com.sample.lmn.davide.cachefilesample.adapter.SoundTrackRvAdapter
 import com.sample.lmn.davide.cachefilesample.managers.YoutubeOnSearchByQueryResults
 import com.sample.lmn.davide.cachefilesample.managers.YoutubeV3AuthenticatorManager
@@ -34,7 +35,11 @@ open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSou
         setContentView(R.layout.activity_main)
         //init view
         recyclerViewId.layoutManager = LinearLayoutManager(applicationContext)
-        recyclerViewId.adapter = SoundTrackRvAdapter(ArrayList())
+        recyclerViewId.adapter = SoundTrackRvAdapter(ArrayList(), listener = object: OnSoundTrackItemClickListener {
+            override fun onItemClick(item: SearchResult) {
+                soundTrackDownloaderManager.downloadAndPlaySoundTrack(item.id.videoId)
+            }
+        })
         onInitView()
     }
 
@@ -96,7 +101,6 @@ open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSou
      */
     override fun youtubeSearchResultSuccess(list: List<SearchResult>, query: String?) {
         showSuccess("$query --- ${list.size}")
-        soundTrackDownloaderManager.downloadAndPlaySoundTrack(list[0].id.videoId)
         (recyclerViewId.adapter as SoundTrackRvAdapter).list = list
         recyclerViewId.adapter.notifyDataSetChanged()
     }
