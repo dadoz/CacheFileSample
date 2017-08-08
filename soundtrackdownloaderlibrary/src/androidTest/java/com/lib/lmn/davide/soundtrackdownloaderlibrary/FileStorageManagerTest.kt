@@ -33,17 +33,17 @@ class FileStorageManagerTest {
     @Throws(Exception::class)
     fun cachedFile() {
         // Context of the app under test.
-        Assert.assertNotNull(fileStorageManager["wwww.bla.com"])
+        Assert.assertNotNull(fileStorageManager.getCachedFile("wwww.bla.com"))
     }
 
     @Test
     @Throws(Exception::class)
     fun putFile() {
         val key: String = "wwww.bla.com"
-        fileStorageManager.put(key, "sample".toByteArray())
+        fileStorageManager.putCachedFile(key, "sample".toByteArray())
 
         // Context of the app under test.
-        Assert.assertNotNull(fileStorageManager[key])
+        Assert.assertNotNull(fileStorageManager.getCachedFile(key))
     }
 
     @Test

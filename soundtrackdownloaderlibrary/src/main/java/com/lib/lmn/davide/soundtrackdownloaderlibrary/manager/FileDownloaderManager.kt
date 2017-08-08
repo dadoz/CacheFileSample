@@ -30,7 +30,7 @@ class FileDownloaderManager(context: Context?, private val fileStorageManager: F
         //else online request
         url?.let {
             volleyReqQueue.add(InputStreamVolleyRequest(Request.Method.GET, url,
-                    Response.Listener<ByteArray> { response -> fileStorageManager.put(url.toString(), response) },
+                    Response.Listener<ByteArray> { response -> fileStorageManager.putCachedFile(url.toString(), response) },
                     Response.ErrorListener { error -> lst2.onErrorResponse(error) },
                     HashMap()))
         }
@@ -39,7 +39,7 @@ class FileDownloaderManager(context: Context?, private val fileStorageManager: F
     /**
      *  cached url
      */
-    fun getCachedFilePath(url: Uri?) = url?.toString()?.let { stringUrl -> fileStorageManager[stringUrl] }
+    fun getCachedFilePath(url: Uri?) = url?.toString()?.let { stringUrl -> fileStorageManager.getCachedFile(stringUrl) }
 
     /**
      *

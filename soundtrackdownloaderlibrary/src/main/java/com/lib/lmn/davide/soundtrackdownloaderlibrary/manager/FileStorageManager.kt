@@ -4,6 +4,7 @@ import android.content.Context
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.models.SoundTrackCache
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.models.SoundTrackRealmModule
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.modules.SoundTrackDownloaderModule
+import com.vicpin.krealmextensions.transaction
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import java.io.File
@@ -39,11 +40,11 @@ class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSo
      * *
      * @return
      */
-    operator fun get(name: String): String? {
+    fun getCachedFile(name: String): String? {
         val key = generateEncodedKey(name)
         return realm
                 .where(SoundTrackCache().javaClass)
-                .equalTo("key", key)
+//                .equalTo("key", key)
                 .findFirst()?.key
     }
 
@@ -52,9 +53,10 @@ class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSo
      * *
      * @param file
      */
-    fun put(key: String, file: ByteArray) {
-        val encodedKey = generateEncodedKey(key)
-        get(encodedKey)?.let {
+    fun putCachedFile(key: String, file: ByteArray) {
+        val encodedKey: String = generateEncodedKey(key)
+        println(encodedKey)
+        if (getCachedFile(encodedKey) == null) {
             //save on db
             saveOnDb(encodedKey)
             //replace file
@@ -66,9 +68,9 @@ class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSo
      *
      */
     private fun saveOnDb(encodedKey: String) {
-        val soundTrackCache = SoundTrackCache()
-        soundTrackCache.key = encodedKey
-        realm.createObject(SoundTrackCache().javaClass, soundTrackCache)
+        realm.transaction { realm ->
+            realm.createObject(SoundTrackCache().javaClass, encodedKey)
+        }
     }
 
 
