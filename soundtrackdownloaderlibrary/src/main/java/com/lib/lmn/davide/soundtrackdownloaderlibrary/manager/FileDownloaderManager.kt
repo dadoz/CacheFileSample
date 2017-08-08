@@ -23,19 +23,23 @@ class FileDownloaderManager(context: Context?, private val fileStorageManager: F
      * TODO refactor
      * @param url
      */
-    fun getSoundTrack(url: Uri) {
-        //cached
-        if (fileStorageManager[url.toString()] != null) {
-            lst.onResponse(fileStorageManager.getFullPath(url.toString()))
-            return
-        }
+    fun getSoundTrack(url: Uri?) {
+        //if cachedUrl is not null return and handle file
+        getCachedFilePath(url)?.let { filePath -> lst.onResponse(filePath); return }
 
-        //online request
-        volleyReqQueue.add(InputStreamVolleyRequest(Request.Method.GET, url,
-                        Response.Listener<ByteArray> { response -> fileStorageManager.put(url.toString(), response) },
-                        Response.ErrorListener { error ->  lst2.onErrorResponse(error) },
-                        HashMap()))
+        //else online request
+        url?.let {
+            volleyReqQueue.add(InputStreamVolleyRequest(Request.Method.GET, url,
+                    Response.Listener<ByteArray> { response -> fileStorageManager.put(url.toString(), response) },
+                    Response.ErrorListener { error -> lst2.onErrorResponse(error) },
+                    HashMap()))
+        }
     }
+
+    /**
+     *  cached url
+     */
+    fun getCachedFilePath(url: Uri?) = url?.toString()?.let { stringUrl -> fileStorageManager[stringUrl] }
 
     /**
      *

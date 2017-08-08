@@ -3,8 +3,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
     packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
@@ -13,7 +13,7 @@ android {
         buildConfigField "String", "YOUTUBE_API_KEY", "\"AIzaSyAo0O8tMUjd7-tWFd87nph_4iJRhby8B1c\""
         applicationId "com.sample.lmn.davide.cachefilesample"
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

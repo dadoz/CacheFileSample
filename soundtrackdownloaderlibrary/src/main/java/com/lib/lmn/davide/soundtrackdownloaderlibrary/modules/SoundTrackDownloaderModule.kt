@@ -19,7 +19,7 @@ open class SoundTrackDownloaderModule(val context: Context?, lst: OnSoundTrackRe
     }
 
     interface OnSoundTrackRetrievesCallbacks {
-        fun onSoundTrackRetrieveSuccess(fileInputStream: FileInputStream)
+        fun onSoundTrackRetrieveSuccess(filePath: String, fileInputStream: FileInputStream)
         fun onSoundTrackRetrieveError(message: String?)
     }
 }

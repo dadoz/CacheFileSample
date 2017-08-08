@@ -82,7 +82,7 @@ open class MainActivity : AppCompatActivity() , SoundTrackDownloaderModule.OnSou
     /**
      *
      */
-    override fun onSoundTrackRetrieveSuccess(fileInputStream: FileInputStream) {
+    override fun onSoundTrackRetrieveSuccess(filePath: String, fileInputStream: FileInputStream) {
         runOnUiThread {
             playCachedFile(fileInputStream)
             showSuccess("sound track successfully downloaded")

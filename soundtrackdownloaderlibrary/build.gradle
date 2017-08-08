@@ -5,8 +5,8 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
 
     packagingOptions {
         exclude 'META-INF/LICENSE'
@@ -18,7 +18,7 @@ android {
         buildConfigField "String", "YOUTUBE_DOWNLOADER_BASE_PATH", "\"http://www.youtubeinmp3.com/\""
 
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
 
@@ -42,6 +42,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
     //appcompat
     compile "com.android.support:appcompat-v7:$appcompat_version"
     compile "com.android.support:design:$appcompat_version"
@@ -65,4 +66,7 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
+    compile 'com.facebook.stetho:stetho:1.5.0'
+    compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
 }

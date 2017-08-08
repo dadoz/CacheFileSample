@@ -9,5 +9,5 @@ import com.sample.lmn.davide.cachefilesample.R
  * Created by davide-syn on 7/21/17.
  */
 class CustomViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
-    val title: TextView? = itemView?.findViewById(R.id.title)
+    val title: TextView? = itemView?.findViewById(R.id.title) as TextView
 }

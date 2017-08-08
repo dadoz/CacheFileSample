@@ -1,11 +1,11 @@
 package com.lib.lmn.davide.soundtrackdownloaderlibrary.manager
 
 import android.content.Context
-import com.lib.lmn.davide.soundtrackdownloaderlibrary.models.SoundTrack
+import com.lib.lmn.davide.soundtrackdownloaderlibrary.models.SoundTrackCache
+import com.lib.lmn.davide.soundtrackdownloaderlibrary.models.SoundTrackRealmModule
 import com.lib.lmn.davide.soundtrackdownloaderlibrary.modules.SoundTrackDownloaderModule
-import com.vicpin.krealmextensions.query
-import com.vicpin.krealmextensions.save
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -15,64 +15,63 @@ import java.lang.ref.WeakReference
 /**
  * Created by davide-syn on 6/26/17.
  */
-
 class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks?) {
     val lst: WeakReference<SoundTrackDownloaderModule.OnSoundTrackRetrievesCallbacks?> = WeakReference(lst)
     val fileDir: File? = context?.filesDir
+    val config: RealmConfiguration by lazy {
+        RealmConfiguration.Builder()
+                .name("library.realm")
+                .modules(SoundTrackRealmModule())
+                .build()
+    }
+
+    val realm: Realm by lazy {
+        Realm.getInstance(config)
+    }
+
     init {
         Realm.init(context)
+        //delete previous realm config
+//        Realm.deleteRealm(config)
     }
     /**
-
-     * @param key
-     * *
-     * @param file
-     */
-    fun put(key: String, file: ByteArray) {
-        val encodedKey = generateEncodedKey(key)
-        saveOnDb(encodedKey)
-        saveFile(encodedKey, file)
-    }
-
-    private fun saveOnDb(encodedKey: String) {
-        val soundTrack = SoundTrack()
-        soundTrack.key = encodedKey
-        soundTrack.save()
-    }
-
-    /**
-
      * @param key
      * *
      * @return
      */
     operator fun get(name: String): String? {
         val key = generateEncodedKey(name)
-        val soundTrack = SoundTrack().query { query -> query.equalTo("key", key) }
-
-        if (soundTrack.isEmpty())
-            return null
-        return soundTrack[0].key
+        return realm
+                .where(SoundTrackCache().javaClass)
+                .equalTo("key", key)
+                .findFirst()?.key
     }
 
     /**
-
      * @param key
      * *
-     * @return
+     * @param file
      */
-    private fun generateEncodedKey(key: String): String {
-//        var encoded = Base64.encodeToString(key.toByteArray(), Base64.DEFAULT)
-//                .replace("=", "").toLowerCase()
-        var encoded = key
-                .replace("http:\\\\", "")
-                .replace("/", "")
-                .replace("=", "")
-                .toLowerCase()
-        if (encoded.length >= 64)
-            encoded = encoded.substring(0, 63)
-        return encoded
+    fun put(key: String, file: ByteArray) {
+        val encodedKey = generateEncodedKey(key)
+        get(encodedKey)?.let {
+            //save on db
+            saveOnDb(encodedKey)
+            //replace file
+            saveFile(encodedKey, file)
+        }
     }
+
+    /**
+     *
+     */
+    private fun saveOnDb(encodedKey: String) {
+        val soundTrackCache = SoundTrackCache()
+        soundTrackCache.key = encodedKey
+        realm.createObject(SoundTrackCache().javaClass, soundTrackCache)
+    }
+
+
 
     //new algorithm to handle file name
 //    StringBuilder sb = new StringBuilder(len);
@@ -101,7 +100,7 @@ class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSo
                 val stream = FileOutputStream(file)
                 stream.write(downloadedFile)
                 stream.close()
-                lst.get()?.onSoundTrackRetrieveSuccess(FileInputStream(file))
+                lst.get()?.onSoundTrackRetrieveSuccess(file.absolutePath, FileInputStream(file))
             } catch (e: IOException) {
                 e.printStackTrace()
                 lst.get()?.onSoundTrackRetrieveError(e.message)
@@ -127,4 +126,22 @@ class FileStorageManager(context: Context?, lst: SoundTrackDownloaderModule.OnSo
         return "$fileDir/$key"
     }
 
+    /**
+
+     * @param key
+     * *
+     * @return
+     */
+    companion object {
+        fun generateEncodedKey(key: String): String {
+            var encoded = key
+                    .replace("http:\\\\", "")
+                    .replace("/", "")
+                    .replace("=", "")
+                    .toLowerCase()
+            if (encoded.length >= 64)
+                encoded = encoded.substring(0, 63)
+            return encoded
+        }
+    }
 }

@@ -6,7 +6,7 @@ import io.realm.annotations.PrimaryKey
 /**
  * Created by davide-syn on 6/29/17.
  */
-open class SoundTrack: RealmObject() {
+open class SoundTrackCache : RealmObject() {
     @PrimaryKey
     lateinit var key: String
 

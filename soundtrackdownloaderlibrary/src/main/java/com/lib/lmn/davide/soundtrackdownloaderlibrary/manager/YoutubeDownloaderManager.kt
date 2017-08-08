@@ -23,7 +23,7 @@ class YoutubeDownloaderManager(val youtubeDownloaderService: YoutubeDownloaderMo
                 .subscribeOn(Schedulers.newThread())
                 .doOnError { throwable -> throwable.printStackTrace() }
                 .onErrorReturn { null }
-                .subscribe { soundTrackUrl -> fileDownloaderManager.getSoundTrack(Uri.parse(soundTrackUrl.link)) }
+                .subscribe { soundTrackUrl -> fileDownloaderManager.getSoundTrack(soundTrackUrl?.link.let { link -> Uri.parse(link) }) }
     }
 
     companion object {
